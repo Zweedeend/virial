@@ -30,12 +30,12 @@ class RadialDistributionFunction:
         m = (self.r >= rmin) & (self.r <= rmax)
         return self.r[m], self.g[m]
 
-    def normalizeVolume(self, dim):
-        self.g = self.g / self.r ** (dim - 1)
+    def normalize_volume(self, dim):
+        self.g /= self.r ** (dim - 1)
         self.w = -np.log(self.g)
 
 
-def VirialCoefficient(r, w, mw):
+def virial_coefficient(r, w, mw):
     b2 = {}
     b2['hs'] = 2 * pi / 3 * min(r) ** 3  # zero -> contact assuming hard spheres
     b2['tot'] = b2['hs'] + np.trapz(-2 * pi * (np.exp(-w) - 1) * r ** 2, r)
@@ -89,14 +89,14 @@ if __name__ == "__main__":
         'zero': ['r*0 + a[0]', [0]]
     }
 
-    if args.show == True:
+    if args.show:
         print 'pre-defined pair-potentials:\n'
         for key, val in potentiallist.iteritems():
             print "%10s = %s" % (key, val[0])
         print '\n(note: the last value of `a` is *always* used to shift data)\n'
         exit(0)
 
-    if args.pot in potentiallist.keys():
+    if args.pot in potentiallist:
         args.guess = potentiallist[args.pot][1]
         args.pot = potentiallist[args.pot][0]
 
@@ -109,9 +109,12 @@ if __name__ == "__main__":
         exit("Error: File " + args.infile + " does not exist.")
 
     # convert to angstrom; normalize volume
-    if args.nm == True: rdf.r = 10 * rdf.r
-    if args.norm == '2d': rdf.normalizeVolume(2)
-    if args.norm == '3d': rdf.normalizeVolume(3)
+    if args.nm:
+        rdf.r *= 10
+    if args.norm == '2d':
+        rdf.normalize_volume(2)
+    if args.norm == '3d':
+        rdf.normalize_volume(3)
 
     # cut out range and fit
     r, g = rdf.slice(*args.range)
@@ -125,7 +128,7 @@ if __name__ == "__main__":
     print ' fit range =', args.range, 'AA'
 
     # merge fitted data and model tail if needed
-    if args.shiftonly == True:
+    if args.shiftonly:
         r, w = rdf.r, rdf.w - a[-1]
     else:
         dr = rdf.r[1] - rdf.r[0]  # data point separation in r
@@ -137,14 +140,14 @@ if __name__ == "__main__":
         w = np.concatenate([rdf.w[shead], pot(rtail, *a)])
 
     # virial coefficient
-    B2 = VirialCoefficient(r, w, args.mw)
+    B2 = virial_coefficient(r, w, args.mw)
     print '\nvirial coefficient:'
     print '  B2hs    =', B2['hs'], 'A3 (', B2['hsrange'], ')'
     print '  B2      =', B2['tot'], 'A3 =', B2.get('mlmol/g2', 'NaN'), 'ml*mol/g2', ' (', B2['range'], ')'
     print '  B2/B2hs =', B2['reduced']
 
     # plot final w(r)
-    if args.plot == True:
+    if args.plot:
         import matplotlib.pyplot as plt
 
         plt.xlabel('$r$', fontsize=24)
