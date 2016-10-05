@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+# -*- encoding: utf-8 -*-
 
 """
-@date   november 2015, malmo
-@author m. lund
+@date   November 2015, Malmö
+@author M. Lund
 """
 
 import matplotlib.pyplot as plt
