@@ -6,14 +6,14 @@
 @author M. Lund
 """
 
-import matplotlib.pyplot as plt
-import numpy as np
-import warnings
 import os
-from math import sqrt, log, pi, exp, fabs, sinh
-from scipy.optimize import curve_fit, OptimizeWarning
-from scipy.constants import N_A
+from math import pi
 from sys import exit
+
+import numpy as np
+from scipy.constants import N_A
+from scipy.optimize import curve_fit
+
 
 class RadialDistributionFunction:
   def __init__(self, filename):
@@ -49,8 +49,6 @@ def VirialCoefficient(r, w, mw):
 
 if __name__ == "__main__":
   import argparse
-  from sys import stdout
-  from argparse import RawTextHelpFormatter
 
   ps = argparse.ArgumentParser(
       prog = 'virial.py',
@@ -106,7 +104,7 @@ if __name__ == "__main__":
   if os.path.isfile( args.infile ):
     rdf = RadialDistributionFunction( args.infile )
   else:
-    sys.exit( "Error: File "+args.infile+" does not exist." )
+    exit( "Error: File "+args.infile+" does not exist." )
 
   # convert to angstrom; normalize volume
   if args.nm == True: rdf.r = 10*rdf.r
