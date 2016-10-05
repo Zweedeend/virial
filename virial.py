@@ -5,6 +5,7 @@
 @date   November 2015, Malmö
 @author M. Lund
 """
+from __future__ import unicode_literals, absolute_import, print_function, division
 
 import os
 from math import pi
@@ -90,17 +91,17 @@ if __name__ == "__main__":
     }
 
     if args.show:
-        print 'pre-defined pair-potentials:\n'
+        print('pre-defined pair-potentials:\n')
         for key, val in potentiallist.iteritems():
-            print "%10s = %s" % (key, val[0])
-        print '\n(note: the last value of `a` is *always* used to shift data)\n'
+            print("%10s = %s" % (key, val[0]))
+        print('\n(note: the last value of `a` is *always* used to shift data)\n')
         exit(0)
 
     if args.pot in potentiallist:
         args.guess = potentiallist[args.pot][1]
         args.pot = potentiallist[args.pot][0]
 
-    exec 'def pot(r,*a): return ' + args.pot  # create pairpot function
+    exec('def pot(r,*a): return ' + args.pot)  # create pairpot function
 
     # load g(r) from disk
     if os.path.isfile(args.infile):
@@ -119,13 +120,13 @@ if __name__ == "__main__":
     # cut out range and fit
     r, g = rdf.slice(*args.range)
     a = curve_fit(pot, r, -np.log(g), args.guess)[0]
-    print 'model potential:'
-    print '   w(r)/kT =', args.pot
-    print '         a =', a, '(fitted)'
-    print '        Mw =', args.mw, 'g/mol'
-    print '     radii =', args.radii, 'AA'
-    print '   charges =', args.z
-    print ' fit range =', args.range, 'AA'
+    print('model potential:')
+    print('   w(r)/kT =', args.pot)
+    print('         a =', a, '(fitted)')
+    print('        Mw =', args.mw, 'g/mol')
+    print('     radii =', args.radii, 'AA')
+    print('   charges =', args.z)
+    print(' fit range =', args.range, 'AA')
 
     # merge fitted data and model tail if needed
     if args.shiftonly:
@@ -141,10 +142,10 @@ if __name__ == "__main__":
 
     # virial coefficient
     B2 = virial_coefficient(r, w, args.mw)
-    print '\nvirial coefficient:'
-    print '  B2hs    =', B2['hs'], 'A3 (', B2['hsrange'], ')'
-    print '  B2      =', B2['tot'], 'A3 =', B2.get('mlmol/g2', 'NaN'), 'ml*mol/g2', ' (', B2['range'], ')'
-    print '  B2/B2hs =', B2['reduced']
+    print('\nvirial coefficient:')
+    print('  B2hs    =', B2['hs'], 'A3 (', B2['hsrange'], ')')
+    print('  B2      =', B2['tot'], 'A3 =', B2.get('mlmol/g2', 'NaN'), 'ml*mol/g2', ' (', B2['range'], ')')
+    print('  B2/B2hs =', B2['reduced'])
 
     # plot final w(r)
     if args.plot:
